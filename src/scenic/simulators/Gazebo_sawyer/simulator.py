@@ -5,34 +5,32 @@ import os
 import traceback
 import warnings
 
-import actionlib
-from gazebo_msgs.srv import DeleteModel
-from geometry_msgs.msg import Point, PoseStamped, Quaternion, Twist
-import numpy as np
-import roslaunch
-import rospy
-from tf.transformations import euler_from_quaternion
+# from gazebo_msgs.srv import DeleteModel
+# from geometry_msgs.msg import Point, PoseStamped, Quaternion, Twist
+# import numpy as np
+# import roslaunch
+# import rospy
+# from tf.transformations import euler_from_quaternion
 
 import scenic.core.errors as errors
 from scenic.core.simulators import Simulation, SimulationCreationError, Simulator
 from scenic.core.vectors import Vector
-from scenic.domains.driving.simulators import DrivingSimulation, DrivingSimulator
-from scenic.simulators.Gazebo_sawyer.utils.spawn_delete_model import (
-    DeleteObject,
-    SpawnObject,
-)
-from scenic.simulators.Gazebo_sawyer.utils.start_gazebo import (
-    CreateSimLaunchParent,
-    PauseGazebo,
-    ResetGazeboWorld,
-    ResetGazeboWorldAndSim,
-    UnpauseGazebo,
-)
-from scenic.simulators.Gazebo_sawyer.utils.state_utils import (  # GetGazeboWorldModelNames,; GetGazeboWorldProperties,
-    GetObjectPose,
-    GetObjectState,
-    SetModelPose,
-)
+# from scenic.simulators.Gazebo_sawyer.utils.spawn_delete_model import (
+    # DeleteObject,
+    # SpawnObject,
+# )
+# from scenic.simulators.Gazebo_sawyer.utils.start_gazebo import (
+    # CreateSimLaunchParent,
+    # PauseGazebo,
+    # ResetGazeboWorld,
+    # ResetGazeboWorldAndSim,
+    # UnpauseGazebo,
+# )
+# from scenic.simulators.Gazebo_sawyer.utils.state_utils import (  # GetGazeboWorldModelNames,; GetGazeboWorldProperties,
+    # GetObjectPose,
+    # GetObjectState,
+    # SetModelPose,
+# )
 
 if errors.verbosityLevel == 0:  # suppress pygame advertisement at zero verbosity
     os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
@@ -42,7 +40,7 @@ from scenic.core.simulators import SimulationCreationError
 from scenic.syntax.veneer import verbosePrint
 
 # TODO: Import Robot-specific library
-import intera_interface
+# import intera_interface
 
 
 class GazeboSimCreationError(SimulationCreationError):

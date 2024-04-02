@@ -1,11 +1,7 @@
-# TODO After finishing, change this file's name back to model.scenic
-# the current name is used just to get syntax highlighting from a code editor
-# from scenic.domains.driving.model import *
 import math
 from scenic.simulators.Gazebo_sawyer.simulator import GazeboSimulator, GazeboSimulation
 from scenic.core.utils import repairMesh
 import os
-#TODO delete spawn model in the initialization of the robot simulator world.
 # Convention:
 # for new objects: let the width  be the dimension along the gazebo y direcition,
 # the length the direction along the gazebo x axis,
@@ -15,7 +11,8 @@ import os
 # Will be converted backstage for other purposes
 simulator GazeboSimulator()
 # TODO fill int he prefix/suffixes to where you store your sdf/urdf files
-object_prefix = '<Your prefix>/Scenic/src/scenic/simulators/Gazebo_sawyer' + '/gazebo_models/' # TODO your model's path
+object_prefix = '/Users/kxu/Scenic/src/scenic/simulators/Gazebo_sawyer' + '/gazebo_models/' # TODO your model's path
+interface_prefix = '/Users/kxu/Scenic/src/scenic/simulators/Gazebo_sawyer/' # TODO your model's path
 default_file_name = "model.sdf"
 get_sdf_dir = lambda s: object_prefix +  s + "/" + default_file_name
 
@@ -97,3 +94,8 @@ class WoodCube5cm(GazeboObject):
     width: 0.05
     length: 0.05
     height: 0.05
+
+class Hammer(GazeboObject):
+    name: 'hammer'
+    # shape:  MeshShape.fromFile(interface_prefix + 'hammer.stl', binary=True)
+    shape:  MeshShape.fromFile(object_prefix + 'hammer/meshes/hammer.dae', binary=True)
