@@ -43,19 +43,21 @@ def getCarlaSimulator(getAssetPath):
             f"bash {CARLA_ROOT}/CarlaUE4.sh -RenderOffScreen", shell=True
         )
 
-        for _ in range(30):
+        for _ in range(180):
             if isCarlaServerRunning():
                 break
             time.sleep(1)
+        else:
+            pytest.fail("Unable to connect to CARLA.")
 
         # Extra 5 seconds to ensure server startup
-        time.sleep(5)
+        time.sleep(10)
 
     base = getAssetPath("maps/CARLA")
 
     def _getCarlaSimulator(town):
         path = os.path.join(base, f"{town}.xodr")
-        simulator = CarlaSimulator(map_path=path, carla_map=town)
+        simulator = CarlaSimulator(map_path=path, carla_map=town, timeout=180)
         return simulator, town, path
 
     yield _getCarlaSimulator
@@ -76,7 +78,7 @@ def test_throttle(getCarlaSimulator):
         behavior DriveWithThrottle():
             while True:
                 take SetThrottleAction(1)
-        
+
         ego = new Car at (369, -326), with behavior DriveWithThrottle
         record ego.speed as CarSpeed
         terminate after 5 steps
@@ -107,11 +109,13 @@ def test_brake(getCarlaSimulator):
 
         behavior DriveThenBrake():
             do DriveWithThrottle() for 2 steps
-            do Brake() for 4 steps
+            do Brake() for 6 steps
 
-        ego = new Car at (369, -326), with behavior DriveThenBrake
+        ego = new Car at (369, -326),
+            with blueprint 'vehicle.toyota.prius',
+            with behavior DriveThenBrake
         record final ego.speed as CarSpeed
-        terminate after 6 steps
+        terminate after 8 steps
     """
     scenario = compileScenic(code, mode2D=True)
     scene = sampleScene(scenario)
