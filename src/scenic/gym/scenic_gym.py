@@ -29,10 +29,13 @@ class ScenicGymEnv(gym.Env):
         self.max_steps = max_steps
         self.simulator = simulator_type()
 
+        self.simulation_results = []
+
         self.feedback_result = None
         # self.scene = ...
         # self.scene = self._make_run_loop() # can do this first, since simulation won't step until we call next(self.scene)
-        self.loop = self._make_run_loop()
+        # self.loop = self._make_run_loop()
+        self.loop = None
 
     def _make_run_loop(self):
         scene = self.scenario.generate(feedback=self.feedback_result)
@@ -58,23 +61,33 @@ class ScenicGymEnv(gym.Env):
                         action = yield observation, info, done(), info
 
                         if done():
+                            self.simulation_results.append(simulation.result)
                             simulation.destroy()
 
                         simulation.action_dict = action # TODO add action dict to simulation interfaces
                         
                         # TODO add some logic with regards to rendering
-            except ResetException:
-                pass # TODO should we do something right here?
+            except GeneratorExit: # maybe add a specific excpetion here
+                if not done():
+                    simulation.destroy()
+                raise StopIteration
+                # TODO should we do something right here?
 
     def reset(self, seed=None, options=None): # TODO will setting seed here conflict with VerifAI's setting of seed?
         # only setting enviornment seed, not torch seed?
         super().reset(seed=seed)
-        self.loop.throw(ResetException())
+        # self.loop.throw(ResetException())
+        try:
+            self.loop.close()
+        except:
+            self.loop = self._make_run_loop()
+
         observation, info = next(self.loop) # not doing self.scene.send(action) just yet
 
         return observation, info
         
     def step(self, action):
+        assert not (self.loop is None), "self.loop is None, have you called reset()?"
         observation, reward, done, info = self.loop.send(action)
 
     def render(): # TODO figure out if this function has to be implemented here or if super() has default implementation
