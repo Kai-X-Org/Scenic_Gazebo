@@ -14,8 +14,8 @@ class ScenicGymEnv(gym.Env):
     
     def __init__(self, 
                  scenario : Scenario,
+                 simulator_type : type, 
                  render_mode=None, 
-                 simulator_type : type = Simulator, 
                  max_steps = 1000,
                  observation_space : spaces.Dict = spaces.Dict(),
                  action_space : spaces.Dict = spaces.Dict()): # empty string means just pure scenic???
@@ -43,8 +43,8 @@ class ScenicGymEnv(gym.Env):
                     done = lambda: not (simulation.result is None)
 
                     simulation.advance()
-                    observation = simulation.getObs()
-                    info = simulation.getInfo() 
+                    observation = simulation.get_obs()
+                    info = simulation.get_info() 
 
                     action = yield observation, info
                     simulation.action_dict = action # TODO add action dict to simulation interfaces
@@ -53,8 +53,8 @@ class ScenicGymEnv(gym.Env):
                         # Probably good that we advance first before any action is set.
                         # this is consistent with how reset works
                         simulation.advance()
-                        observation = self.getObs()
-                        info = self.getInfo()
+                        observation = self.get_obs()
+                        info = self.get_info()
                         action = yield observation, info, done(), info
 
                         if done():
