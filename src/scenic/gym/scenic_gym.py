@@ -38,7 +38,7 @@ class ScenicGymEnv(gym.Env):
         scene = self.scenario.generate(feedback=self.feedback_result)
         while True:
             try:
-                with self.simulator.simulateStepped(self.scene, maxSteps=self.max_steps) as simulation:
+                with self.simulator.simulateStepped(scene, maxSteps=self.max_steps) as simulation:
                     # this first block before the while loop is for the first reset call
                     done = lambda: not (simulation.result is None)
 
@@ -69,13 +69,13 @@ class ScenicGymEnv(gym.Env):
     def reset(self, seed=None, options=None): # TODO will setting seed here conflict with VerifAI's setting of seed?
         # only setting enviornment seed, not torch seed?
         super().reset(seed=seed)
-        self.scene.throw(ResetException())
-        observation, info = next(self.scene) # not doing self.scene.send(action) just yet
+        self.loop.throw(ResetException())
+        observation, info = next(self.loop) # not doing self.scene.send(action) just yet
 
         return observation, info
         
     def step(self, action):
-        observation, reward, done, info = self.scene.send(action)
+        observation, reward, done, info = self.loop.send(action)
 
     def render(): # TODO figure out if this function has to be implemented here or if super() has default implementation
         """
