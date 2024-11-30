@@ -2,7 +2,7 @@ from scenic.core.simulators import Simulator, Simulation
 from scenic.core.scenarios import Scenario
 import gymnasium as gym
 from gymnasium import spaces
-
+from typing import Callable
 
 class ScenicGymEnv(gym.Env):
     """
@@ -10,21 +10,21 @@ class ScenicGymEnv(gym.Env):
 
     """
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4} # TODO placeholder, add simulator-specific entries
-    # TODO determine where to pass in reward function
     
     def __init__(self, 
                  scenario : Scenario,
                  simulator_type : type, 
+                 reward_fn : Callable,
                  render_mode=None, 
                  max_steps = 1000,
                  observation_space : spaces.Dict = spaces.Dict(),
                  action_space : spaces.Dict = spaces.Dict()): # empty string means just pure scenic???
 
-        assert not (scenario is None)
+        assert render_mode is None or render_mode in self.metadata["render_modes"]
+
         self.observation_space = observation_space
         self.action_space = action_space
-
-        assert render_mode is None or render_mode in self.metadata["render_modes"]
+        self.reward_fn = reward_fn
         self.render_mode = render_mode
         self.max_steps = max_steps
         self.simulator = simulator_type()
@@ -32,9 +32,6 @@ class ScenicGymEnv(gym.Env):
         self.simulation_results = []
 
         self.feedback_result = None
-        # self.scene = ...
-        # self.scene = self._make_run_loop() # can do this first, since simulation won't step until we call next(self.scene)
-        # self.loop = self._make_run_loop()
         self.loop = None
 
     def _make_run_loop(self):
@@ -49,8 +46,8 @@ class ScenicGymEnv(gym.Env):
                     observation = simulation.get_obs()
                     info = simulation.get_info() 
 
-                    action = yield observation, info
-                    simulation.action_dict = action # TODO add action dict to simulation interfaces
+                    actions = yield observation, info
+                    simulation.actions = actions # TODO add action dict to simulation interfaces
 
                     while not done():
                         # Probably good that we advance first before any action is set.
@@ -58,15 +55,18 @@ class ScenicGymEnv(gym.Env):
                         simulation.advance()
                         observation = self.get_obs()
                         info = self.get_info()
-                        action = yield observation, info, done(), info
+                        reward = self.reward_fn(observation) # will the reward_fn also be taking info as input, too?
+                        actions = yield observation, reward, done(), info
 
                         if done():
+                            self.feedback_result = simulation.result
                             self.simulation_results.append(simulation.result)
                             simulation.destroy()
 
-                        simulation.action_dict = action # TODO add action dict to simulation interfaces
+                        simulation.actions = actions # TODO add action dict to simulation interfaces
                         
-                        # TODO add some logic with regards to rendering
+                        # TODO add some logic with regards to rendering, or do we need to?
+
             except GeneratorExit: # maybe add a specific excpetion here
                 if not done():
                     simulation.destroy()
@@ -76,7 +76,7 @@ class ScenicGymEnv(gym.Env):
     def reset(self, seed=None, options=None): # TODO will setting seed here conflict with VerifAI's setting of seed?
         # only setting enviornment seed, not torch seed?
         super().reset(seed=seed)
-        # self.loop.throw(ResetException())
+
         try:
             self.loop.close()
         except:
@@ -88,6 +88,7 @@ class ScenicGymEnv(gym.Env):
         
     def step(self, action):
         assert not (self.loop is None), "self.loop is None, have you called reset()?"
+
         observation, reward, done, info = self.loop.send(action)
 
     def render(): # TODO figure out if this function has to be implemented here or if super() has default implementation
