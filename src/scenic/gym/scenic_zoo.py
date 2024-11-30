@@ -1,5 +1,5 @@
 from scenic.core.simulators import Simulator, Simulation
-form pettingzoo import ParllelEnv 
+from pettingzoo import ParllelEnv 
 
 class ScenicGymEnv(ParallelEnv):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4} # TODO placeholder, add simulator-specific entries
