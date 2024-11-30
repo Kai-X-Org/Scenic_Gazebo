@@ -1,6 +1,6 @@
 from scenic.core.simulators import Simulator, Simulation
-import gym
-from gym import spaces
+import gymnasium as gym
+from gymnasium import spaces
 
 
 class ScenicGymEnv(gym.Env):
@@ -9,9 +9,9 @@ class ScenicGymEnv(gym.Env):
     def __init__(self, 
                  render_mode=None, 
                  scenic_program : str = None, # TODO add code to allow both directory and program itself
-                 simulator : scenic.core.simulators.Simulator = None, 
+                 simulator : Simulator = None, 
                  verifai_sampler="scenic", 
-                 max_steps = 1000
+                 max_steps = 1000,
                  observation_space : spaces.Dict = spaces.Dict(),
                  action_space : spaces.Dict = spaces.Dict()): # empty string means just pure scenic???
 
@@ -51,6 +51,8 @@ class ScenicGymEnv(gym.Env):
                         simulation.action_dict = action # TODO add action dict to simulation interfaces
                         
                         # TODO add some logic with regards to rendering
+            except ResetException:
+                pass # TODO should we do something right here?
 
     def _get_obs(self):
         return self.scene.getObs() # TODO add this function in simulator interfaces
@@ -74,9 +76,4 @@ class ScenicGymEnv(gym.Env):
 
     def close():
         self.simulator.destroy()
-
-
-
-
-
 
