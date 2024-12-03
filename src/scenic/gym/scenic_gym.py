@@ -18,7 +18,8 @@ class ScenicGymEnv(gym.Env):
     
     def __init__(self, 
                  scenario : Scenario,
-                 simulator_type : type, 
+                 # simulator_type : type, 
+                 simulator,
                  reward_fn : Callable,
                  render_mode=None, 
                  max_steps = 1000,
@@ -32,22 +33,26 @@ class ScenicGymEnv(gym.Env):
         self.reward_fn = reward_fn
         self.render_mode = render_mode
         self.max_steps = max_steps
-        self.simulator = simulator_type()
-
+        # self.simulator = simulator_type()
+        self.simulator = simulator
+        self.scenario = scenario
         self.simulation_results = []
 
         self.feedback_result = None
         self.loop = None
 
     def _make_run_loop(self):
-        scene = self.scenario.generate(feedback=self.feedback_result)
+        scene, _ = self.scenario.generate(feedback=self.feedback_result)
+        steps_taken = 0
         while True:
             try:
                 with self.simulator.simulateStepped(scene, maxSteps=self.max_steps) as simulation:
                     # this first block before the while loop is for the first reset call
                     done = lambda: not (simulation.result is None)
+                    truncated = lambda: (steps_taken >= self.max_steps) # TODO handle cases where it is done right on maxsteps
 
                     simulation.advance()
+                    steps_taken += 1
                     observation = simulation.get_obs()
                     info = simulation.get_info() 
 
@@ -58,10 +63,11 @@ class ScenicGymEnv(gym.Env):
                         # Probably good that we advance first before any action is set.
                         # this is consistent with how reset works
                         simulation.advance()
-                        observation = self.get_obs()
-                        info = self.get_info()
+                        steps_taken += 1
+                        observation = simulation.get_obs()
+                        info = simulation.get_info()
                         reward = self.reward_fn(observation) # will the reward_fn also be taking info as input, too?
-                        actions = yield observation, reward, done(), info
+                        actions = yield observation, reward, done(), truncated(), info
 
                         if done():
                             self.feedback_result = simulation.result
@@ -84,7 +90,7 @@ class ScenicGymEnv(gym.Env):
         # only setting enviornment seed, not torch seed?
         super().reset(seed=seed)
         if self.loop is None:
-            self.loop = _make_run_loop()
+            self.loop = self._make_run_loop()
         else:
             self.loop.throw(ResetException())
 
@@ -100,7 +106,8 @@ class ScenicGymEnv(gym.Env):
     def step(self, action):
         assert not (self.loop is None), "self.loop is None, have you called reset()?"
 
-        observation, reward, done, info = self.loop.send(action)
+        observation, reward, terminated, truncated, info = self.loop.send(action)
+        return observation, reward, terminated, truncated, info
 
     def render(): # TODO figure out if this function has to be implemented here or if super() has default implementation
         """
@@ -108,6 +115,6 @@ class ScenicGymEnv(gym.Env):
         """
         pass
 
-    def close():
+    def close(self):
         self.simulator.destroy()
 
