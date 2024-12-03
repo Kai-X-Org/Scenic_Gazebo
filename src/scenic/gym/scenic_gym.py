@@ -4,6 +4,11 @@ import gymnasium as gym
 from gymnasium import spaces
 from typing import Callable
 
+#TODO make ResetException
+class ResetException(Exception):
+    def __init__(self):
+        super().__init__("Resetting")
+
 class ScenicGymEnv(gym.Env):
     """
     verifai_sampler now not an argument added in here, but one specified int he Scenic program
@@ -67,20 +72,26 @@ class ScenicGymEnv(gym.Env):
                         
                         # TODO add some logic with regards to rendering, or do we need to?
 
-            except GeneratorExit: # maybe add a specific excpetion here
-                if not done():
-                    simulation.destroy()
-                raise StopIteration
-                # TODO should we do something right here?
+            # except GeneratorExit: # maybe add a specific excpetion here
+                # if not done():
+                    # simulation.destroy()
+                # raise StopIteration
+                # # TODO should we do something right here?
+            except ResetException:
+                pass
 
     def reset(self, seed=None, options=None): # TODO will setting seed here conflict with VerifAI's setting of seed?
         # only setting enviornment seed, not torch seed?
         super().reset(seed=seed)
+        if self.loop is None:
+            self.loop = _make_run_loop()
+        else:
+            self.loop.throw(ResetException())
 
-        try:
-            self.loop.close()
-        except:
-            self.loop = self._make_run_loop()
+        # try:
+            # self.loop.close()
+        # except:
+            # self.loop = self._make_run_loop()
 
         observation, info = next(self.loop) # not doing self.scene.send(action) just yet
 
