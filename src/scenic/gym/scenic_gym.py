@@ -19,7 +19,7 @@ class ScenicGymEnv(gym.Env):
     def __init__(self, 
                  scenario : Scenario,
                  # simulator_type : type, 
-                 simulator,
+                 simulator : Simulator,
                  reward_fn : Callable,
                  render_mode=None, 
                  max_steps = 1000,
