@@ -12,7 +12,6 @@ class ResetException(Exception):
 class ScenicGymEnv(gym.Env):
     """
     verifai_sampler now not an argument added in here, but one specified int he Scenic program
-
     """
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4} # TODO placeholder, add simulator-specific entries
     
