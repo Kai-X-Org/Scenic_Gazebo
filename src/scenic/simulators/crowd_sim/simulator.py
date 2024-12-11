@@ -20,66 +20,70 @@ if errors.verbosityLevel == 0:  # suppress pygame advertisement at zero verbosit
 
 from scenic.core.geometry import allChains, findMinMax
 from scenic.core.regions import toPolygon
-from scenic.core.simulators import SimulationCreationError
+from scenic.core.simulators import Simulation, SimulationCreationError, Simulator
 from scenic.core.vectors import Orientation, Vector
 # from scenic.domains.driving.controllers import (
     # PIDLateralController,
     # PIDLongitudinalController,
 # )
 from scenic.syntax.veneer import verbosePrint
+import matplotlib.pyplot as plt
 
 current_dir = pathlib.Path(__file__).parent.absolute()
 
-WIDTH = 1280
-HEIGHT = 800
-MAX_ACCELERATION = 5.6  # in m/s2, seems to be a pretty reasonable value
-MAX_BRAKING = 4.6
 
-ROAD_COLOR = (0, 0, 0)
-ROAD_WIDTH = 2
-LANE_COLOR = (96, 96, 96)
-CENTERLINE_COLOR = (224, 224, 224)
-SIDEWALK_COLOR = (0, 128, 255)
-SHOULDER_COLOR = (96, 96, 96)
+class CrowdSimSimulationCreationError(SimulationCreationError):
+    def __init__(self, msg):
+        self.msg = msg
+        super().__init__(self.msg)
 
-
-class NewtonianSimulator(DrivingSimulator):
-    """Implementation of `Simulator` for the Newtonian simulator.
-
-    Args:
-        network (Network): road network to display in the background, if any.
-        render (bool): whether to render the simulation in a window.
-
-    .. versionchanged:: 3.0
-
-        The **timestep** argument is removed: it can be specified when calling
-        `simulate` instead. The default timestep for the Newtonian simulator
-        when not otherwise specified is still 0.1 seconds.
+class CrowdSimSimulator(Simulator):
+    """
     """
 
-    def __init__(self, network=None, render=False, debug_render=False, export_gif=False):
+    def __init__(self, render=False, record="", timestep=0.1):
         super().__init__()
-        self.export_gif = export_gif
+        self.timestep = timestep
         self.render = render
-        self.debug_render = debug_render
-        self.network = network
+        self.config = ConfigNoArgs() # FIXME still need to import these
+        self.env = CrowdSimPredRealGSTScenic()
+        self.env.configure(self.config)
+
+        fig, ax = plt.subplots(figsize=(7, 7))
+        ax.set_xlim(-10, 10) # 6
+        ax.set_ylim(-10, 10)
+        ax.set_xlabel('x(m)', fontsize=16)
+        ax.set_ylabel('y(m)', fontsize=16)
+        plt.ion()
+        plt.show()
+
+        self.env.render_axis = ax
+        
 
     def createSimulation(self, scene, **kwargs):
-        simulation = NewtonianSimulation(
-            scene, self.network, self.render, self.export_gif, self.debug_render, **kwargs
+        simulation = CrowdSimSimulation(
+            scene, self.env, self.render, self.record, timestep=self.timestep, **kwargs
         )
         if self.export_gif and self.render:
             simulation.generate_gif("simulation.gif")
         return simulation
 
 
-class NewtonianSimulation(DrivingSimulation):
+class CrowdSimSimulation(Simulation):
     """Implementation of `Simulation` for the Newtonian simulator."""
 
     def __init__(
-        self, scene, network, render, export_gif, debug_render, timestep, **kwargs
+        self, scene, env, render, record timestep=0.1, **kwargs
     ):
         self.render = render
+        self.record = record
+        self.timestep = timestep
+        self.env = env
+        self.observation = None
+        self.info = None
+        self.reward = 0 # is this really the best value???
+
+        self.actions = None # the step_action dictionary..though could change depending on space
 
         if timestep is None:
             timestep = 0.1
@@ -87,32 +91,61 @@ class NewtonianSimulation(DrivingSimulation):
         super().__init__(scene, timestep=timestep, **kwargs)
 
     def setup(self):
+        # self.env.reset() # FIXME figure out where this should be called
         super().setup()
+        self.env.reset() 
 
     def createObjectInSimulator(self, obj):
         # Set actor's initial speed
-        pass
+        px, py, _ = obj.position
+        gx, gy, _ = obj.goal
+
+        if obj.object_type == "robot":
+            obj._sim_obj = self.env.robot
+            self.env.robot.set(px, py, gx, gy, 0, 0, obj.yaw) #TODO, what about the radius and v_pref arguments?
+
+        elif obj.object_type == "human":
+            obj._sim_obj = self.env.generate_circle_crossing_human_scenic(px, py)
+
+        else:
+            raise CrowdSimSimulationCreationError("Unrecognized object type during createObjectInSimulation")
 
 
     def step(self):
-        pass
+        #FIXME ensure type of self.actions match the expectation of self.env.step
+        self.observation, self.reward, self.done, self.info = self.env.step(self.actions)
+        self.actions = dict()
+
+        if self.render:
+            self.env.render()
+
 
     def getProperties(self, obj, properties):
-        yaw, _, _ = obj.parentOrientation.globalToLocalAngles(obj.heading, 0, 0)
-
+        # yaw, _, _ = obj.parentOrientation.globalToLocalAngles(obj.heading, 0, 0)
+        state = obj._sim_obj.get_observable_state_list()
+        position = Vecotr(state[0], state[1], 0)
+        yaw = state[-1]
+        velocity = Vector(state[2], state[3], 0)
+            
         values = dict(
-            position=obj.position,
+            position=position,
             yaw=yaw,
             pitch=0,
             roll=0,
-            velocity=obj.velocity,
-            speed=obj.speed,
-            angularSpeed=obj.angularSpeed,
-            angularVelocity=obj.angularVelocity,
+            velocity=velocity,
+            speed=velocity.norm(),
+            angularSpeed=0,
+            angularVelocity=0,
         )
-        if "elevation" in properties:
-            values["elevation"] = obj.elevation
+        # if "elevation" in properties:
+            # values["elevation"] = obj.elevation
         return values
+
+    def get_obs(self):
+        pass
+
+    def get_info(self):
+        pass
 
     def destroy(self):
         if self.render:
