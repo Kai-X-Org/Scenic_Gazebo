@@ -17,6 +17,7 @@ class Human(Agent):
     object_type: "human"
     radius: Range(0.3, 0.5)
     v_pref: Range(5, 1.5)
+    goal: (-self.position[0], -self.position[1], 0)
 
 class Robot(Agent):
     name: "robot"

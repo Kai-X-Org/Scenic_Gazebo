@@ -159,8 +159,11 @@ class CrowdSimSimulation(Simulation):
             angularSpeed=0,
             angularVelocity=0,
         )
+
+        obj.goal[0], obj.goal[1] = sim_obj.gx, sim_obj.gy # updating the current goal point
         # if "elevation" in properties:
             # values["elevation"] = obj.elevation
+
         return values
 
     def get_obs(self):
