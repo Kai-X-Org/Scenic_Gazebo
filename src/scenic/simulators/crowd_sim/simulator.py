@@ -102,6 +102,8 @@ class CrowdSimSimulation(Simulation):
         # Set actor's initial speed
         px, py, _ = obj.position
         gx, gy, _ = obj.goal
+        v_pref = obj.v_pref
+        radius = obj.radius
 
         if obj.object_type == "robot":
             obj._sim_obj = self.env.robot # This should be fine
@@ -109,14 +111,18 @@ class CrowdSimSimulation(Simulation):
             self.agent_params["robot"] = dict(px=px,
                                               py=py,
                                               gx=gx,
-                                              gy=gy)
+                                              gy=gy,
+                                              v_pref=v_pref,
+                                              radius=radius)
 
         elif obj.object_type == "human":
             # obj._sim_obj = self.env.generate_circle_crossing_human_scenic(px, py)
             self.agent_params[obj.name] = dict(px=px,
                                               py=py,
                                               gx=-px,
-                                              gy=-py)
+                                              gy=-py,
+                                              v_pref=v_pref,
+                                              radius=radius)
 
         else:
             raise CrowdSimSimulationCreationError("Unrecognized object type during createObjectInSimulation")

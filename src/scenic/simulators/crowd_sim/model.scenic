@@ -15,6 +15,8 @@ class Agent:
 class Human(Agent):
     name: "human"
     object_type: "human"
+    radius: Range(0.3, 0.5)
+    v_pref: Range(5, 1.5)
 
 class Robot(Agent):
     name: "robot"
