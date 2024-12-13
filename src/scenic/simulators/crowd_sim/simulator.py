@@ -48,6 +48,7 @@ class CrowdSimSimulator(Simulator):
         self.config = ConfigNoArgs() # FIXME still need to import these
         self.env = CrowdSimPredRealGSTScenic()
         self.env.configure(self.config)
+        self.record = record
 
         fig, ax = plt.subplots(figsize=(7, 7))
         ax.set_xlim(-10, 10) # 6
@@ -64,8 +65,6 @@ class CrowdSimSimulator(Simulator):
         simulation = CrowdSimSimulation(
             scene, self.env, self.render, self.record, timestep=self.timestep, **kwargs
         )
-        if self.export_gif and self.render:
-            simulation.generate_gif("simulation.gif")
         return simulation
 
 
@@ -73,7 +72,7 @@ class CrowdSimSimulation(Simulation):
     """Implementation of `Simulation` for the Newtonian simulator."""
 
     def __init__(
-        self, scene, env, render, record timestep=0.1, **kwargs
+        self, scene, env, render, record, timestep=0.1, **kwargs
     ):
         self.render = render
         self.record = record
@@ -140,7 +139,7 @@ class CrowdSimSimulation(Simulation):
             sim_obj = self.env.human_dict[obj.name]
 
         state = sim_obj.get_observable_state_list()
-        position = Vecotr(state[0], state[1], 0)
+        position = Vector(state[0], state[1], 0)
         yaw = state[-1]
         velocity = Vector(state[2], state[3], 0)
             
