@@ -5,7 +5,6 @@ import math
 from math import copysign, degrees, radians, sin
 import os
 import pathlib
-import statistics
 import time
 
 from PIL import Image
@@ -15,19 +14,16 @@ import scenic.core.errors as errors  # isort: skip
 
 if errors.verbosityLevel == 0:  # suppress pygame advertisement at zero verbosity
     os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
-# import pygame
-# import shapely
 
 from scenic.core.geometry import allChains, findMinMax
 from scenic.core.regions import toPolygon
 from scenic.core.simulators import Simulation, SimulationCreationError, Simulator
 from scenic.core.vectors import Orientation, Vector
-# from scenic.domains.driving.controllers import (
-    # PIDLateralController,
-    # PIDLongitudinalController,
-# )
 from scenic.syntax.veneer import verbosePrint
 import matplotlib.pyplot as plt
+from crowd_nav_fork.crowd_sim.envs.crowd_sim_pred_real_gst_scenic import CrowdSimPredRealGSTScenic 
+from crowd_nav_fork.crowd_sim.envs.crowd_sim_var_num_scenic import CrowdSimVarNumScenic
+from crowd_nav_fork.crowd_nav.configs.config import ConfigNoArgs
 
 current_dir = pathlib.Path(__file__).parent.absolute()
 
