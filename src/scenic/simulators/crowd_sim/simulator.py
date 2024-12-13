@@ -84,6 +84,8 @@ class CrowdSimSimulation(Simulation):
         self.reward = 0 # is this really the best value???
 
         self.actions = None # the step_action dictionary..though could change depending on space
+        self.agent_params = dict()
+        # self.human_dict = dict()
 
         if timestep is None:
             timestep = 0.1
@@ -93,7 +95,9 @@ class CrowdSimSimulation(Simulation):
     def setup(self):
         # self.env.reset() # FIXME figure out where this should be called
         super().setup()
-        self.env.reset() 
+        self.env.reset()
+        self.human_dict = self.env.human_dict
+
 
     def createObjectInSimulator(self, obj):
         # Set actor's initial speed
@@ -101,11 +105,19 @@ class CrowdSimSimulation(Simulation):
         gx, gy, _ = obj.goal
 
         if obj.object_type == "robot":
-            obj._sim_obj = self.env.robot
-            self.env.robot.set(px, py, gx, gy, 0, 0, obj.yaw) #TODO, what about the radius and v_pref arguments?
+            obj._sim_obj = self.env.robot # This should be fine
+            # self.env.robot.set(px, py, gx, gy, 0, 0, obj.yaw) #TODO, what about the radius and v_pref arguments?
+            self.agent_params["robot"] = dict(px=px,
+                                              py=py,
+                                              gx=gx,
+                                              gy=gy)
 
         elif obj.object_type == "human":
-            obj._sim_obj = self.env.generate_circle_crossing_human_scenic(px, py)
+            # obj._sim_obj = self.env.generate_circle_crossing_human_scenic(px, py)
+            self.agent_params[obj.name] = dict(px=px,
+                                              py=py,
+                                              gx=-px,
+                                              gy=-py)
 
         else:
             raise CrowdSimSimulationCreationError("Unrecognized object type during createObjectInSimulation")
@@ -122,7 +134,12 @@ class CrowdSimSimulation(Simulation):
 
     def getProperties(self, obj, properties):
         # yaw, _, _ = obj.parentOrientation.globalToLocalAngles(obj.heading, 0, 0)
-        state = obj._sim_obj.get_observable_state_list()
+        if obj.object_type == "robot":
+            sim_obj = self.env.robot
+        else:
+            sim_obj = self.env.human_dict[obj.name]
+
+        state = sim_obj.get_observable_state_list()
         position = Vecotr(state[0], state[1], 0)
         yaw = state[-1]
         velocity = Vector(state[2], state[3], 0)
@@ -142,11 +159,11 @@ class CrowdSimSimulation(Simulation):
         return values
 
     def get_obs(self):
-        pass
+        return self.observation
 
     def get_info(self):
-        pass
+        return self.info
 
     def destroy(self):
-        if self.render:
-            pygame.quit()
+        # FIXME figure out how crowd_sim destroys...if at all
+        super().destroy()
