@@ -23,6 +23,7 @@ from scenic.syntax.veneer import verbosePrint
 import matplotlib.pyplot as plt
 from crowd_nav_fork.crowd_sim.envs.crowd_sim_pred_real_gst_scenic import CrowdSimPredRealGSTScenic 
 from crowd_nav_fork.crowd_sim.envs.crowd_sim_var_num_scenic import CrowdSimVarNumScenic
+from crowd_nav_fork.crowd_sim.envs.crowd_sim_pred_scenic import CrowdSimPredScenic 
 from crowd_nav_fork.crowd_nav.configs.config import ConfigNoArgs
 
 current_dir = pathlib.Path(__file__).parent.absolute()
@@ -43,8 +44,9 @@ class CrowdSimSimulator(Simulator):
         self.render = render
         self.config = ConfigNoArgs()
         # self.env = CrowdSimPredRealGSTScenic()
-        print("USING VAR NUM RIGHT NOW, DON'T FORGET TO SWITCH LATER!!!")
-        self.env = CrowdSimVarNumScenic()
+        print("USING VAR NUM/PRED RIGHT NOW, DON'T FORGET TO SWITCH LATER!!!")
+        # self.env = CrowdSimVarNumScenic()
+        self.env = CrowdSimPredScenic()
         self.env.configure(self.config)
         self.record = record
 
