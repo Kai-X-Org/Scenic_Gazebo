@@ -19,7 +19,7 @@ class ScenicGymEnv(gym.Env):
                  scenario : Scenario,
                  # simulator_type : type, 
                  simulator : Simulator,
-                 reward_fn : Callable,
+                 # reward_fn : Callable,
                  render_mode=None, 
                  max_steps = 1000,
                  observation_space : spaces.Dict = spaces.Dict(),
@@ -29,7 +29,7 @@ class ScenicGymEnv(gym.Env):
 
         self.observation_space = observation_space
         self.action_space = action_space
-        self.reward_fn = reward_fn
+        # self.reward_fn = reward_fn
         self.render_mode = render_mode
         self.max_steps = max_steps
         # self.simulator = simulator_type()
@@ -65,7 +65,8 @@ class ScenicGymEnv(gym.Env):
                         steps_taken += 1
                         observation = simulation.get_obs()
                         info = simulation.get_info()
-                        reward = self.reward_fn(observation) # will the reward_fn also be taking info as input, too?
+                        reward = simulation.get_reward()
+                        # reward = self.reward_fn(observation) # will the reward_fn also be taking info as input, too?
                         actions = yield observation, reward, done(), truncated(), info
 
                         if done():
@@ -108,7 +109,7 @@ class ScenicGymEnv(gym.Env):
         observation, reward, terminated, truncated, info = self.loop.send(action)
         return observation, reward, terminated, truncated, info
 
-    def render(): # TODO figure out if this function has to be implemented here or if super() has default implementation
+    def render(self): # TODO figure out if this function has to be implemented here or if super() has default implementation
         """
         likely just going to be something like simulation.render() or something
         """

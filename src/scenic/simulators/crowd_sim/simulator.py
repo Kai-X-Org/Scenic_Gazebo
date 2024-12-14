@@ -170,6 +170,9 @@ class CrowdSimSimulation(Simulation):
     def get_info(self):
         return self.info
 
+    def get_reward(self):
+        return self.reward
+
     def destroy(self):
         # FIXME figure out how crowd_sim destroys...if at all
         super().destroy()
