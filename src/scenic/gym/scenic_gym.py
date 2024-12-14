@@ -115,7 +115,7 @@ class ScenicGymEnv(gym.Env):
         likely just going to be something like simulation.render() or something
         """
         # FIXME for one project only...also a bit hacky...
-        self.env.render() k
+        self.env.render()
 
     def close(self):
         self.simulator.destroy()
