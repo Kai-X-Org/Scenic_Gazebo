@@ -35,6 +35,8 @@ class ScenicGymEnv(gym.Env):
         # self.simulator = simulator_type()
         self.simulator = simulator
         self.env = self.simulator.env # FIXME for one project only...a bit hacky should fix
+        self.action_space = self.env.action_space # FIXME for one project only...a bit hacky should fix 
+        self.observation_space = self.env.observation_space # FIXME for one project only...a bit hacky should fix
         self.scenario = scenario
         self.simulation_results = []
 
