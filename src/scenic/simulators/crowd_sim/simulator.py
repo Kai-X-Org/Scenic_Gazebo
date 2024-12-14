@@ -65,6 +65,10 @@ class CrowdSimSimulator(Simulator):
         )
         return simulation
 
+    def destroy(self):
+        self.env.close()
+        super().destroy()
+
 
 class CrowdSimSimulation(Simulation):
     """Implementation of `Simulation` for the Newtonian simulator."""
