@@ -34,6 +34,7 @@ class ScenicGymEnv(gym.Env):
         self.max_steps = max_steps
         # self.simulator = simulator_type()
         self.simulator = simulator
+        self.env = self.simulator.env # FIXME for one project only...a bit hacky should fix
         self.scenario = scenario
         self.simulation_results = []
 
@@ -113,7 +114,8 @@ class ScenicGymEnv(gym.Env):
         """
         likely just going to be something like simulation.render() or something
         """
-        pass
+        # FIXME for one project only...also a bit hacky...
+        self.env.render() k
 
     def close(self):
         self.simulator.destroy()
