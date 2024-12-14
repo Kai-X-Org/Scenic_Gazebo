@@ -41,8 +41,10 @@ class CrowdSimSimulator(Simulator):
         super().__init__()
         self.timestep = timestep
         self.render = render
-        self.config = ConfigNoArgs() # FIXME still need to import these
-        self.env = CrowdSimPredRealGSTScenic()
+        self.config = ConfigNoArgs()
+        # self.env = CrowdSimPredRealGSTScenic()
+        print("USING VAR NUM RIGHT NOW, DON'T FORGET TO SWITCH LATER!!!")
+        self.env = CrowdSimVarNumScenic()
         self.env.configure(self.config)
         self.record = record
 
@@ -76,7 +78,7 @@ class CrowdSimSimulation(Simulation):
         self.env = env
         self.observation = None
         self.info = None
-        self.reward = 0 # is this really the best value???
+        self.reward = None # is this really the best value???
 
         self.actions = None # the step_action dictionary..though could change depending on space
         self.agent_params = dict()
