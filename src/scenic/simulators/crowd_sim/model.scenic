@@ -10,6 +10,7 @@ class Agent:
     shape: CylinderShape((self.radius, self.radius, 1.0))
     yaw: 0
     goal: (0, 0, 0)
+    v_pref: 1
 
 
 class Human(Agent):

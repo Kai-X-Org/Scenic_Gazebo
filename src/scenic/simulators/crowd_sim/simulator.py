@@ -63,7 +63,7 @@ class CrowdSimSimulator(Simulator):
 
     def createSimulation(self, scene, **kwargs):
         simulation = CrowdSimSimulation(
-            scene, self.env, self.render, self.record, timestep=self.timestep, **kwargs
+            scene, self.env, self.render, self.record,  **kwargs
         )
         return simulation
 
