@@ -120,7 +120,7 @@ class CrowdSimSimulation(Simulation):
         gx, gy, _ = obj.goal
         v_pref = obj.v_pref
         radius = obj.radius
-        yaw = obj.yaw
+        yaw = obj.yaw + pi/2
 
         if obj.object_type == "robot":
             obj._sim_obj = self.env.robot # This should be fine
@@ -164,7 +164,7 @@ class CrowdSimSimulation(Simulation):
 
         state = sim_obj.get_observable_state_list()
         position = Vector(state[0], state[1], 0)
-        yaw = state[-1]
+        yaw = state[-1] - pi/2
         velocity = Vector(state[2], state[3], 0)
             
         values = dict(
