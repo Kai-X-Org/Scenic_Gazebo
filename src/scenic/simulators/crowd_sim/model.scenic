@@ -1,13 +1,13 @@
 from scenic.simulators.crowd_sim.simulator import CrowdSimSimulator, CrowdSimSimulation
-
+import numpy as np
 simulator CrowdSimSimulator()
 
 
 class Agent:
     name: "agent"
     object_type: "agent"
-    radius: 1
-    shape: CylinderShape(self.radius, self.radius, 1)
+    radius: 1.0
+    shape: CylinderShape((self.radius, self.radius, 1.0))
     yaw: 0
     goal: (0, 0, 0)
 
@@ -15,7 +15,8 @@ class Agent:
 class Human(Agent):
     name: "human"
     object_type: "human"
-    radius: Range(0.3, 0.5)
+    # radius: Range(0.3, 0.5)
+    radius: np.random.rand() * 0.2 + 0.3
     v_pref: Range(5, 1.5)
     goal: (-self.position[0], -self.position[1], 0)
 
