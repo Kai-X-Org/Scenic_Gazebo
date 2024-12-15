@@ -53,7 +53,7 @@ class ScenicOAI15GymEnv(gym.Env):
                 with self.simulator.simulateStepped(scene, maxSteps=self.max_steps) as simulation:
                     # this first block before the while loop is for the first reset call
                     done = lambda: not (simulation.result is None)
-                    truncated = lambda: (steps_taken >= self.max_steps) # TODO handle cases where it is done right on maxsteps
+                    # truncated = lambda: (steps_taken >= self.max_steps) # TODO handle cases where it is done right on maxsteps
                     # FIXME, actually, on a second thought, this really should not be here, right?
                     # simulation.advance()
                     # steps_taken += 1
@@ -72,7 +72,8 @@ class ScenicOAI15GymEnv(gym.Env):
                         info = simulation.get_info()
                         reward = simulation.get_reward()
                         # reward = self.reward_fn(observation) # will the reward_fn also be taking info as input, too?
-                        actions = yield observation, reward, done(), truncated(), info
+                        # actions = yield observation, reward, done(), truncated(), info
+                        actions = yield observation, reward, done(), info
                         # print(f"GOT ACTIONS: {actions}")
 
                         if done():
@@ -112,8 +113,8 @@ class ScenicOAI15GymEnv(gym.Env):
     def step(self, action):
         assert not (self.loop is None), "self.loop is None, have you called reset()?"
 
-        observation, reward, terminated, truncated, info = self.loop.send(action)
-        return observation, reward, terminated, truncated, info
+        observation, reward, terminated, info = self.loop.send(action)
+        return observation, reward, terminated, info
 
     def render(self): # TODO figure out if this function has to be implemented here or if super() has default implementation
         """
