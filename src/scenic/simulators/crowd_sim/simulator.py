@@ -39,11 +39,19 @@ class CrowdSimSimulator(Simulator):
     nenv: number of envioronments (# processes)
     """
 
-    def __init__(self, render=False, record="", timestep=0.1, env_seed=1, nenv=1):
+    def __init__(self, 
+                 render=False, 
+                 record="", 
+                 timestep=0.1, 
+                 env_seed=1, 
+                 nenv=1,
+                 predict_method='const_vel'):
+
         super().__init__()
         self.timestep = timestep
         self.render = render
         self.config = ConfigNoArgs()
+        self.config.sim.predict_method = predict_method
         # self.env = CrowdSimPredRealGSTScenic()
         print("USING VAR NUM/PRED RIGHT NOW, DON'T FORGET TO SWITCH LATER!!!")
         # self.env = CrowdSimVarNumScenic()
@@ -112,6 +120,7 @@ class CrowdSimSimulation(Simulation):
         gx, gy, _ = obj.goal
         v_pref = obj.v_pref
         radius = obj.radius
+        yaw = obj.yaw
 
         if obj.object_type == "robot":
             obj._sim_obj = self.env.robot # This should be fine
@@ -121,7 +130,8 @@ class CrowdSimSimulation(Simulation):
                                               gx=gx,
                                               gy=gy,
                                               v_pref=v_pref,
-                                              radius=radius)
+                                              radius=radius,
+                                              yaw=yaw)
 
         elif obj.object_type == "human":
             # obj._sim_obj = self.env.generate_circle_crossing_human_scenic(px, py)
@@ -168,7 +178,8 @@ class CrowdSimSimulation(Simulation):
             angularVelocity=0,
         )
 
-        obj.goal[0], obj.goal[1] = sim_obj.gx, sim_obj.gy # updating the current goal point
+        obj.goal[0] = sim_obj.gx
+        obj.goal[1] = sim_obj.gy
         # if "elevation" in properties:
             # values["elevation"] = obj.elevation
 
