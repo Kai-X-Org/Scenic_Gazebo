@@ -71,7 +71,7 @@ class ScenicGymEnv(gym.Env):
                         reward = simulation.get_reward()
                         # reward = self.reward_fn(observation) # will the reward_fn also be taking info as input, too?
                         actions = yield observation, reward, done(), truncated(), info
-                        print(f"GOT ACTIONS: {actions}")
+                        # print(f"GOT ACTIONS: {actions}")
 
                         if done():
                             self.feedback_result = simulation.result
