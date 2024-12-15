@@ -52,9 +52,9 @@ class ScenicGymEnv(gym.Env):
                     # this first block before the while loop is for the first reset call
                     done = lambda: not (simulation.result is None)
                     truncated = lambda: (steps_taken >= self.max_steps) # TODO handle cases where it is done right on maxsteps
-
-                    simulation.advance()
-                    steps_taken += 1
+                    # FIXME, actually, on a second thought, this really should not be here, right?
+                    # simulation.advance()
+                    # steps_taken += 1
                     observation = simulation.get_obs()
                     info = simulation.get_info() 
 
@@ -71,6 +71,7 @@ class ScenicGymEnv(gym.Env):
                         reward = simulation.get_reward()
                         # reward = self.reward_fn(observation) # will the reward_fn also be taking info as input, too?
                         actions = yield observation, reward, done(), truncated(), info
+                        print(f"GOT ACTIONS: {actions}")
 
                         if done():
                             self.feedback_result = simulation.result
