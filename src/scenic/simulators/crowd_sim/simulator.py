@@ -36,9 +36,10 @@ class CrowdSimSimulationCreationError(SimulationCreationError):
 
 class CrowdSimSimulator(Simulator):
     """
+    nenv: number of envioronments (# processes)
     """
 
-    def __init__(self, render=False, record="", timestep=0.1):
+    def __init__(self, render=False, record="", timestep=0.1, env_seed=1, nenv=1):
         super().__init__()
         self.timestep = timestep
         self.render = render
@@ -48,6 +49,8 @@ class CrowdSimSimulator(Simulator):
         # self.env = CrowdSimVarNumScenic()
         self.env = CrowdSimPredScenic()
         self.env.configure(self.config)
+        self.env.thisSeed = env_seed
+        self.env.nenv = 1
         self.record = record
 
         fig, ax = plt.subplots(figsize=(7, 7))
@@ -98,7 +101,8 @@ class CrowdSimSimulation(Simulation):
     def setup(self):
         # self.env.reset() # FIXME figure out where this should be called
         super().setup()
-        self.env.reset()
+        print(f"AGENT PARAMS DICT: {self.agent_params}")
+        self.env.reset(agent_params=self.agent_params)
         self.human_dict = self.env.human_dict
 
 
