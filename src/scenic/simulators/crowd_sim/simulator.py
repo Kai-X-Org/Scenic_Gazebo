@@ -178,8 +178,9 @@ class CrowdSimSimulation(Simulation):
             angularVelocity=0,
         )
 
-        obj.goal[0] = sim_obj.gx
-        obj.goal[1] = sim_obj.gy
+        # obj.goal[0] = sim_obj.gx
+        # obj.goal[1] = sim_obj.gy
+        goal = Vector(sim_obj.gx, sim_obj.gy, 0)
         # if "elevation" in properties:
             # values["elevation"] = obj.elevation
 
