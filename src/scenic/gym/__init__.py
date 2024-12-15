@@ -5,5 +5,9 @@ from scenic.simulators.crowd_sim.simulator import CrowdSimSimulator
 from gym import register
 
 
-# register()
+# register(
+    # id="ScenicGymOAIEnv-v0",
+    # entry_point="scenic.gym.envs:ScenicGymOAIEnv",
+
+# )
 
