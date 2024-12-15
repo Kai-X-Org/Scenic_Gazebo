@@ -6,13 +6,15 @@ simulator CrowdSimSimulator()
 
 ego = new Robot at (8, 0, 0), with yaw 0 deg
 
-human1 = new Human at (3, 0, 0), with yaw 45 deg
+human1 = new Human at (3, 0, 0), with name "human1", with yaw 45 deg
 
-human2 = new Human at (5, 0, 0), with yaw 45 deg
+human2 = new Human at (5, 0, 0), with name "human2", with yaw 45 deg
 
-human3 = new Human at (3, 3, 0), with yaw 45 deg
+human3 = new Human at (3, 3, 0), with name "human3", with yaw 45 deg
 
-human4 = new Human at (-3, 3, 0), with yaw 45 deg
+human4 = new Human at (-3, 3, 0), with name "human4", with yaw 45 deg
+
+human5 = new Human at (-5, -2, 0), with name "human5", with yaw 45 deg
 
 
 
