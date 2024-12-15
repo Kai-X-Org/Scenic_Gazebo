@@ -175,7 +175,7 @@ class CrowdSimSimulation(Simulation):
             velocity=velocity,
             speed=velocity.norm(),
             angularSpeed=0,
-            angularVelocity=0,
+            angularVelocity=Vector(0, 0, 0), # technically there is an angular vel.... but maybe doesn't matter
         )
 
         # obj.goal[0] = sim_obj.gx
