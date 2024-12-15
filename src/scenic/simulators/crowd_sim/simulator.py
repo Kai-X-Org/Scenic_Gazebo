@@ -21,10 +21,10 @@ from scenic.core.simulators import Simulation, SimulationCreationError, Simulato
 from scenic.core.vectors import Orientation, Vector
 from scenic.syntax.veneer import verbosePrint
 import matplotlib.pyplot as plt
-from crowd_nav_fork.crowd_sim.envs.crowd_sim_pred_real_gst_scenic import CrowdSimPredRealGSTScenic 
-from crowd_nav_fork.crowd_sim.envs.crowd_sim_var_num_scenic import CrowdSimVarNumScenic
-from crowd_nav_fork.crowd_sim.envs.crowd_sim_pred_scenic import CrowdSimPredScenic 
-from crowd_nav_fork.crowd_nav.configs.config import ConfigNoArgs
+from .crowd_nav_fork.crowd_sim.envs.crowd_sim_pred_real_gst_scenic import CrowdSimPredRealGSTScenic 
+from .crowd_nav_fork.crowd_sim.envs.crowd_sim_var_num_scenic import CrowdSimVarNumScenic
+from .crowd_nav_fork.crowd_sim.envs.crowd_sim_pred_scenic import CrowdSimPredScenic 
+from .crowd_nav_fork.crowd_nav.configs.config import ConfigNoArgs
 
 current_dir = pathlib.Path(__file__).parent.absolute()
 
