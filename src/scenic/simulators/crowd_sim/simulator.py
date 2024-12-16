@@ -55,7 +55,8 @@ class CrowdSimSimulator(Simulator):
         # self.env = CrowdSimPredRealGSTScenic()
         print("USING VAR NUM/PRED RIGHT NOW, DON'T FORGET TO SWITCH LATER!!!")
         # self.env = CrowdSimVarNumScenic()
-        self.env = CrowdSimPredScenic()
+        # self.env = CrowdSimPredScenic()
+        self.env = CrowdSimPredRealGSTScenic()
         self.env.configure(self.config)
         self.env.thisSeed = env_seed
         self.env.nenv = 1
