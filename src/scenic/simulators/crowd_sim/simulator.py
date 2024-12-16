@@ -110,8 +110,9 @@ class CrowdSimSimulation(Simulation):
     def setup(self):
         # self.env.reset() # FIXME figure out where this should be called
         super().setup()
-        print(f"AGENT PARAMS DICT: {self.agent_params}")
-        self.env.reset(agent_params=self.agent_params)
+        # print(f"AGENT PARAMS DICT: {self.agent_params}")
+        self.observation = self.env.reset(agent_params=self.agent_params)
+        
         self.human_dict = self.env.human_dict
 
 
