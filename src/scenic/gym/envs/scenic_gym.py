@@ -77,6 +77,7 @@ class ScenicGymEnv(gym.Env):
                             self.feedback_result = simulation.result
                             self.simulation_results.append(simulation.result)
                             simulation.destroy()
+                            break
 
                         simulation.actions = actions # TODO add action dict to simulation interfaces
                         
