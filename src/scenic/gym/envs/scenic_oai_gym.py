@@ -11,7 +11,7 @@ class ResetException(Exception):
     def __init__(self):
         super().__init__("Resetting")
 
-class ScenicOAIGymEnv(gym.Env):
+class ScenicOAI15GymEnv(gym.Env):
     """
     verifai_sampler now not an argument added in here, but one specified int he Scenic program
     """
@@ -47,16 +47,14 @@ class ScenicOAIGymEnv(gym.Env):
 
     def _make_run_loop(self):
         scene, _ = self.scenario.generate(feedback=self.feedback_result)
-        steps_taken = 0
         while True:
             try:
                 with self.simulator.simulateStepped(scene, maxSteps=self.max_steps) as simulation:
-                    # this first block before the while loop is for the first reset call
+
+                    steps_taken = 0
                     done = lambda: not (simulation.result is None)
-                    truncated = lambda: (steps_taken >= self.max_steps) # TODO handle cases where it is done right on maxsteps
-                    # FIXME, actually, on a second thought, this really should not be here, right?
-                    # simulation.advance()
-                    # steps_taken += 1
+                    truncated = lambda: (steps_taken >= self.max_steps)
+
                     observation = simulation.get_obs()
                     info = simulation.get_info() 
 
@@ -72,48 +70,38 @@ class ScenicOAIGymEnv(gym.Env):
                         info = simulation.get_info()
                         reward = simulation.get_reward()
                         # reward = self.reward_fn(observation) # will the reward_fn also be taking info as input, too?
-                        actions = yield observation, reward, done(), truncated(), info
+                        # actions = yield observation, reward, done(), truncated(), info
                         # print(f"GOT ACTIONS: {actions}")
 
                         if done():
                             self.feedback_result = simulation.result
                             self.simulation_results.append(simulation.result)
                             simulation.destroy()
+                            actions = yield observation, reward, done(), truncated(), info
 
+                        actions = yield observation, reward, done(), truncated(), info
                         simulation.actions = actions # TODO add action dict to simulation interfaces
                         
-                        # TODO add some logic with regards to rendering, or do we need to?
-
-            # except GeneratorExit: # maybe add a specific excpetion here
-                # if not done():
-                    # simulation.destroy()
-                # raise StopIteration
-                # # TODO should we do something right here?
             except ResetException:
-                pass
+                continue
 
     def reset(self, seed=None, options=None): # TODO will setting seed here conflict with VerifAI's setting of seed?
-        # only setting enviornment seed, not torch seed?
-        super().reset(seed=seed)
+        super().reset()
         if self.loop is None:
             self.loop = self._make_run_loop()
+            observtion, info = next(self.loop)
         else:
-            self.loop.throw(ResetException())
+            observation, info = self.loop.throw(ResetException())
 
-        # try:
-            # self.loop.close()
-        # except:
-            # self.loop = self._make_run_loop()
 
-        observation, info = next(self.loop) # not doing self.scene.send(action) just yet
 
         return observation, info
         
     def step(self, action):
         assert not (self.loop is None), "self.loop is None, have you called reset()?"
 
-        observation, reward, terminated, truncated, info = self.loop.send(action)
-        return observation, reward, terminated, truncated, info
+        observation, reward, terminated, info = self.loop.send(action)
+        return observation, reward, terminated, info
 
     def render(self): # TODO figure out if this function has to be implemented here or if super() has default implementation
         """
