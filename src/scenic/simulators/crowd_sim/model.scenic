@@ -24,4 +24,4 @@ class Human(Agent):
 class Robot(Agent):
     name: "robot"
     object_type: "robot"
-    radius: 1
+    radius: 0.3

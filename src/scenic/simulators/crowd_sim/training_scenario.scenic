@@ -3,7 +3,6 @@ from scenic.simulators.crowd_sim.simulator import CrowdSimSimulator
 
 param verifaiSamplerType = 'halton'
 param x = VerifaiRange(-3, 3)
-param x = VerifaiRange(-3, 3)
 param gx = VerifaiRange(-6, 6)
 param gy = VerifaiRange(-6, 6)
 simulator CrowdSimSimulator()

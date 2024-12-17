@@ -126,6 +126,7 @@ class CrowdSimSimulation(Simulation):
 
         if obj.object_type == "robot":
             obj._sim_obj = self.env.robot # This should be fine
+            # print(f"bot gx gy at spawn {gx, gy}")
             # self.env.robot.set(px, py, gx, gy, 0, 0, obj.yaw) #TODO, what about the radius and v_pref arguments?
             self.agent_params["robot"] = dict(px=px,
                                               py=py,
@@ -161,6 +162,7 @@ class CrowdSimSimulation(Simulation):
         # yaw, _, _ = obj.parentOrientation.globalToLocalAngles(obj.heading, 0, 0)
         if obj.object_type == "robot":
             sim_obj = self.env.robot
+            # print(f"BOT GOAL: {sim_obj.gx, sim_obj.gy}")
         else:
             sim_obj = self.env.human_dict[obj.name]
 
