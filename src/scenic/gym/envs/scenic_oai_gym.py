@@ -46,9 +46,9 @@ class ScenicOAIGymEnv(gym.Env):
         self.loop = None
 
     def _make_run_loop(self):
-        scene, _ = self.scenario.generate(feedback=self.feedback_result)
         while True:
             try:
+                scene, _ = self.scenario.generate(feedback=self.feedback_result)
                 with self.simulator.simulateStepped(scene, maxSteps=self.max_steps) as simulation:
 
                     steps_taken = 0
