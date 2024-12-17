@@ -4,7 +4,7 @@ from scenic.simulators.crowd_sim.simulator import CrowdSimSimulator
 param verifaiSamplerType = 'halton'
 
 param x = VerifaiRange(-3, 3)
-param y = VerifaiRange(-3, 0)
+param y = VerifaiRange(-5, 0)
 param gx = VerifaiRange(-3, 3)
 param gy = VerifaiRange(1.5, 4)
 
