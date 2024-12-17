@@ -24,4 +24,4 @@ human2 = new Human at (Range(0, 3), 0, 0), with name "human2", with yaw 45 deg
 human3 = new Human at (3, 3, 0), with name "human3", with yaw 45 deg
 
 # human4 = new Human at (-3, 3, 0), with name "human4", with yaw 45 deg
-
+terminate when ego.collision
