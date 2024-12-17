@@ -11,7 +11,7 @@ class ResetException(Exception):
     def __init__(self):
         super().__init__("Resetting")
 
-class ScenicOAI15GymEnv(gym.Env):
+class ScenicOAIGymEnv(gym.Env):
     """
     verifai_sampler now not an argument added in here, but one specified int he Scenic program
     """
@@ -86,10 +86,9 @@ class ScenicOAI15GymEnv(gym.Env):
                 continue
 
     def reset(self, seed=None, options=None): # TODO will setting seed here conflict with VerifAI's setting of seed?
-        super().reset()
         if self.loop is None:
             self.loop = self._make_run_loop()
-            observtion, info = next(self.loop)
+            observation, info = next(self.loop)
         else:
             observation, info = self.loop.throw(ResetException())
 
