@@ -25,3 +25,4 @@ class Robot(Agent):
     name: "robot"
     object_type: "robot"
     radius: 0.3
+    collision: False

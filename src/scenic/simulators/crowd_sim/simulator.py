@@ -163,6 +163,8 @@ class CrowdSimSimulation(Simulation):
         # yaw, _, _ = obj.parentOrientation.globalToLocalAngles(obj.heading, 0, 0)
         if obj.object_type == "robot":
             sim_obj = self.env.robot
+            collision = self.env.collision
+            obj.collision = collision
             # print(f"BOT GOAL: {sim_obj.gx, sim_obj.gy}")
         else:
             sim_obj = self.env.human_dict[obj.name]
