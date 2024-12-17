@@ -121,6 +121,7 @@ class CrowdSimSimulation(Simulation):
         # Set actor's initial speed
         px, py, _ = obj.position
         gx, gy, _ = obj.goal
+        
         v_pref = obj.v_pref
         radius = obj.radius
         yaw = obj.yaw + pi/2
