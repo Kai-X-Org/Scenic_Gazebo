@@ -53,7 +53,7 @@ class CrowdSimSimulator(Simulator):
         self.config = ConfigNoArgs()
         self.config.sim.predict_method = predict_method
         # self.env = CrowdSimPredRealGSTScenic()
-        print("USING VAR NUM/PRED RIGHT NOW, DON'T FORGET TO SWITCH LATER!!!")
+        # print("USING VAR NUM/PRED RIGHT NOW, DON'T FORGET TO SWITCH LATER!!!")
         # self.env = CrowdSimVarNumScenic()
         self.env = CrowdSimPredScenic()
         # self.env = CrowdSimPredRealGSTScenic()
