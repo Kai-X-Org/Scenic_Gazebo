@@ -112,6 +112,7 @@ class CrowdSimSimulation(Simulation):
         super().setup()
         # print(f"AGENT PARAMS DICT: {self.agent_params}")
         self.observation = self.env.reset(agent_params=self.agent_params)
+        # print(f"interface reset observation {self.observation}")
         
         self.human_dict = self.env.human_dict
 
