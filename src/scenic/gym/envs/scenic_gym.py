@@ -47,23 +47,18 @@ class ScenicGymEnv(gym.Env):
         scene, _ = self.scenario.generate(feedback=self.feedback_result)
         # steps_taken = 0
         while True:
-            print("loop real restart")
             try:
                 with self.simulator.simulateStepped(scene, maxSteps=self.max_steps) as simulation:
                     steps_taken = 0
-                    print("Loop restart")
                     # this first block before the while loop is for the first reset call
                     done = lambda: not (simulation.result is None)
                     truncated = lambda: (steps_taken >= self.max_steps) # TODO handle cases where it is done right on maxsteps
-                    print(f"done or truncated: {done() or truncated()}")
                     # FIXME, actually, on a second thought, this really should not be here, right?
                     # simulation.advance()
                     # steps_taken += 1
                     observation = simulation.get_obs()
                     info = simulation.get_info() 
-                    print("first yielding")
                     actions = yield observation, info
-                    print(f"actions received: {actions}")
                     simulation.actions = actions # TODO add action dict to simulation interfaces
 
                     while not done():
@@ -89,7 +84,6 @@ class ScenicGymEnv(gym.Env):
                         simulation.actions = actions # TODO add action dict to simulation interfaces
                         
             except ResetException:
-                print("RESET RAISED")
                 continue
 
     def reset(self, seed=None, options=None): # TODO will setting seed here conflict with VerifAI's setting of seed?
@@ -99,15 +93,8 @@ class ScenicGymEnv(gym.Env):
             self.loop = self._make_run_loop()
             observation, info = next(self.loop) # not doing self.scene.send(action) just yet
         else:
-            print("looping")
             observation, info = self.loop.throw(ResetException())
 
-        # try:
-            # self.loop.close()
-        # except:
-            # self.loop = self._make_run_loop()
-        # print("looping")
-        # observation, info = next(self.loop) # not doing self.scene.send(action) just yet
 
         return observation, info
         
