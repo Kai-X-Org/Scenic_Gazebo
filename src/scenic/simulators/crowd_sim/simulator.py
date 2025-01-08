@@ -11,6 +11,7 @@ from PIL import Image
 import numpy as np
 
 import scenic.core.errors as errors  # isort: skip
+import gymnasium as gym
 
 if errors.verbosityLevel == 0:  # suppress pygame advertisement at zero verbosity
     os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
@@ -62,6 +63,9 @@ class CrowdSimSimulator(Simulator):
         self.env.nenv = 1
         self.record = record
 
+        self.make_observation_space()
+        self.make_action_space()
+
         fig, ax = plt.subplots(figsize=(7, 7))
         ax.set_xlim(-10, 10) # 6
         ax.set_ylim(-10, 10)
@@ -82,6 +86,26 @@ class CrowdSimSimulator(Simulator):
     def destroy(self):
         self.env.close()
         super().destroy()
+
+    def make_observation_space(self):
+        d={}
+        # robot node: px, py, r, gx, gy, v_pref, theta
+        d['robot_node'] = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(1,7,), dtype = np.float32)
+        # only consider all temporal edges (human_num+1) and spatial edges pointing to robot (human_num)
+        d['temporal_edges'] = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(1, 2,), dtype=np.float32)
+        d['spatial_edges'] = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(self.env.max_human_num, 2), dtype=np.float32)
+        # number of humans detected at each timestep
+        d['detected_human_num'] = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(1, ), dtype=np.float32)
+        # whether each human is visible to robot (ordered by human ID, should not be sorted)
+        d['visible_masks'] = gym.spaces.Box(low=0, high=1,
+                                            shape=(self.env.max_human_num,),
+                                            dtype=np.bool)
+        self.observation_space=gym.spaces.Dict(d)
+
+
+    def make_action_space(self):
+        high = 10 * np.ones([2, ])
+        self.action_space = gym.spaces.Box(-high, high, dtype=np.float32)
 
 
 class CrowdSimSimulation(Simulation):

@@ -4,7 +4,6 @@ import gymnasium as gym
 from gymnasium import spaces
 from typing import Callable
 
-#TODO make ResetException
 class ResetException(Exception):
     def __init__(self):
         super().__init__("Resetting")
@@ -35,8 +34,10 @@ class ScenicGymEnv(gym.Env):
         # self.simulator = simulator_type()
         self.simulator = simulator
         self.env = self.simulator.env # FIXME for one project only...a bit hacky should fix
-        self.action_space = self.env.action_space # FIXME for one project only...a bit hacky should fix 
-        self.observation_space = self.env.observation_space # FIXME for one project only...a bit hacky should fix
+        self.action_space = self.simulator.action_space
+        self.observation_space = self.simulator.observation_space
+        # self.action_space = self.env.action_space # FIXME for one project only...a bit hacky should fix 
+        # self.observation_space = self.env.observation_space # FIXME for one project only...a bit hacky should fix
         self.scenario = scenario
         self.simulation_results = []
 
