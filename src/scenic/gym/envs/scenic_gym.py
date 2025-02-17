@@ -17,9 +17,7 @@ class ScenicGymEnv(gym.Env):
     
     def __init__(self, 
                  scenario : Scenario,
-                 # simulator_type : type, 
                  simulator : Simulator,
-                 # reward_fn : Callable,
                  render_mode=None, 
                  max_steps = 1000,
                  observation_space : spaces.Dict = spaces.Dict(),
@@ -34,9 +32,6 @@ class ScenicGymEnv(gym.Env):
         self.max_steps = max_steps
         # self.simulator = simulator_type()
         self.simulator = simulator
-        self.env = self.simulator.env # FIXME for one project only...a bit hacky should fix
-        self.action_space = self.env.action_space # FIXME for one project only...a bit hacky should fix 
-        self.observation_space = self.env.observation_space # FIXME for one project only...a bit hacky should fix
         self.scenario = scenario
         self.simulation_results = []
 
@@ -109,7 +104,8 @@ class ScenicGymEnv(gym.Env):
         likely just going to be something like simulation.render() or something
         """
         # FIXME for one project only...also a bit hacky...
-        self.env.render()
+        # self.env.render()
+        pass
 
     def close(self):
         self.simulator.destroy()
