@@ -297,6 +297,9 @@ class NewtonianSimulation(DrivingSimulation):
 
     def get_info(self):
         return None
+    
+    def get_reward(self):
+        return 1
 
     def destroy(self):
         if self.render:
