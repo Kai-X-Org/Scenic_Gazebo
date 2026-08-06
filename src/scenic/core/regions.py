@@ -2233,6 +2233,49 @@ class SpheroidRegion(MeshVolumeRegion):
         )
 
 
+class CylinderRegion(MeshVolumeRegion):
+    """Region in the shape of a rectangular cuboid, i.e. a box.
+
+    By default the unit box centered at the origin and aligned with the axes is used.
+
+    Parameters are the same as `MeshVolumeRegion`, with the exception of the ``mesh``
+    parameter which is excluded.
+    """
+
+    def __init__(self, *args, **kwargs):
+        cylinder_mesh = trimesh.creation.cylinder(radius=1, height=1)
+        super().__init__(mesh=cylinder_mesh, *args, **kwargs)
+
+    @cached_property
+    def isConvex(self):
+        return True
+
+    def sampleGiven(self, value):
+        return CylinderRegion(
+            dimensions=value[self.dimensions],
+            position=value[self.position],
+            rotation=value[self.rotation],
+            orientation=value[self.orientation],
+            tolerance=self.tolerance,
+            name=self.name,
+        )
+
+    def evaluateInner(self, context):
+        dimensions = valueInContext(self.dimensions, context)
+        position = valueInContext(self.position, context)
+        rotation = valueInContext(self.rotation, context)
+        orientation = valueInContext(self.orientation, context)
+
+        return CylinderRegion(
+            dimensions=dimensions,
+            position=position,
+            rotation=rotation,
+            orientation=orientation,
+            tolerance=self.tolerance,
+            name=self.name,
+        )
+
+
 class VoxelRegion(Region):
     """(WIP) Region represented by a voxel grid in 3D space.
 

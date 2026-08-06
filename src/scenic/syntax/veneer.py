@@ -99,6 +99,7 @@ __all__ = (
     "MeshSurfaceRegion",
     "BoxRegion",
     "SpheroidRegion",
+    "CylinderRegion",
     "PathRegion",
     "Region",
     "PointSetRegion",
@@ -223,6 +224,7 @@ from scenic.core.regions import (
     Region,
     SectorRegion,
     SpheroidRegion,
+    CylinderRegion,
     everywhere,
     nowhere,
 )

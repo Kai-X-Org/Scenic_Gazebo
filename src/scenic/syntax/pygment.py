@@ -440,6 +440,7 @@ class ScenicLexer(BetterPythonLexer):
         "MeshSurfaceRegion",
         "BoxRegion",
         "SpheroidRegion",
+        "CylinderRegion",
         "Workspace",
         "Range",
         "DiscreteRange",
